@@ -8,17 +8,19 @@ from scr import confiq
 DF = convert_totalspent_to_num(confiq.TRAIN_DF, "TotalSpent")
 result = explorer(DF, confiq.TARGET_COLUM)
 
-def distributions(df, col, ax):
-    sns.histplot(data=df, x=col, ax=ax)
+def distributions(df, col):
+    plt.figure(figsize=(10, 5))
 
-    ax.set_title(f'{col} распределение')
-    ax.set_xlabel(col)
-    ax.set_ylabel('Частота')
+    sns.histplot(data=df, x=col)
 
-def num_cor(data_num_cor):
+    plt.title(f'{col} распределение')
+    plt.xlabel(col)
+    plt.ylabel('Частота')
 
-    pearson = data_num_cor["pearson_number_correlation"]
-    spearman = data_num_cor["spearman_number_correlation"]
+    plt.tight_layout()
+    plt.show()
+
+def num_cor(pearson, spearman):
 
     fig, axes = plt.subplots(1, 2, figsize=(14, 6))
 
@@ -43,10 +45,7 @@ def num_cor(data_num_cor):
     plt.tight_layout()
     plt.show()
 
-def cat_cor(data_cat_cor):
-
-    categorical_cor = data_cat_cor["categorical_correlation"]
-    binary_cor = data_cat_cor["binary_correlation"]
+def cat_cor(categorical_cor, binary_cor):
 
     fig, axes = plt.subplots(1, 2, figsize=(16, 7))
 
@@ -73,8 +72,7 @@ def cat_cor(data_cat_cor):
     plt.tight_layout()
     plt.show()
 
-def target_cor(data_target_cor):
-    target_data = data_target_cor["target_correlation"]
+def target_cor(target_data):
 
     numeric = pd.DataFrame({
         col: {"Correlation": values["correlation"]}
@@ -104,50 +102,3 @@ def target_cor(data_target_cor):
 
     plt.tight_layout()
     plt.show()
-
-def visualizatior(df, result, mode):
-
-    categories = result["base_info"]["data_category"]
-    numbers = categories["numbers"]
-    categorical = categories["categorical"]
-    binary = categories["binary"]
-
-    if mode in ["d_n", "d_c", "all"]:
-
-        if mode == "d_n":
-            plot_cols = numbers
-
-        elif mode == "d_c":
-            plot_cols = categorical + binary
-
-        else:
-            plot_cols = numbers + categorical + binary
-
-        for i in range(0, len(plot_cols), 2):
-            cols = plot_cols[i:i+2]
-
-            fig, axes = plt.subplots(
-                len(cols), 1,
-                figsize=(10, 4 * len(cols))
-            )
-
-            if len(cols) == 1:
-                axes = [axes]
-
-            for ax, col in zip(axes, cols):
-                distributions(df, col, ax)
-
-            plt.tight_layout()
-            plt.show()
-            plt.close(fig)
-
-    if mode in ["n", "all"]:
-        num_cor(result["correlations"]["numbers"])
-
-    if mode in ["c", "all"]:
-        cat_cor(result["correlations"]["categorical"])
-
-    if mode in ["t", "all"]:
-        target_cor(result["correlations"]["target"])
-
-visualizatior(DF, result, "all")

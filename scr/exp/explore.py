@@ -38,6 +38,31 @@ def type_collect(df, target):
 
     return category, numbers, binary
 
+def categorical_futures_analiz(df, cat_cols):
+    cols_data = {}
+
+    for col in cat_cols:
+
+        nan_indices = df[df[col].isna()].index.tolist()
+
+        values, counts = np.unique(df[col], return_counts=True)
+
+        mode_value = values[np.argmax(counts)]
+        mode_count = max(counts)
+
+        cols_data[col] = {"len": len(df[col]),
+                          "nan_len": len(nan_indices),
+                          "nan_indices": nan_indices,
+                          "unique": df[col].nunique(),
+                          "moda": mode_value,
+                          "mode_count": mode_count,
+                          "values":df[col].unique().tolist(),
+                          "type_value": df[col].dtype,
+                          "value_counts":df[col].value_counts().round(2).tolist(),
+                          "value_percent":df[col].value_counts(normalize=True).round(2).tolist()}
+
+    return cols_data
+
 def numeric_futures_analiz(df, num_cols):
     cols_data = {}
 
@@ -62,31 +87,6 @@ def numeric_futures_analiz(df, num_cols):
                           "Q3": q3.round(2),
                           "p95": p95.round(2),
                           "p99": p99.round(2)}
-
-    return cols_data
-
-def categorical_futures_analiz(df, cat_cols):
-    cols_data = {}
-
-    for col in cat_cols:
-
-        nan_indices = df[df[col].isna()].index.tolist()
-
-        values, counts = np.unique(df[col], return_counts=True)
-
-        mode_value = values[np.argmax(counts)]
-        mode_count = max(counts)
-
-        cols_data[col] = {"len": len(df[col]),
-                          "nan_len": len(nan_indices),
-                          "nan_indices": nan_indices,
-                          "unique": df[col].nunique(),
-                          "moda": mode_value,
-                          "mode_count": mode_count,
-                          "values":df[col].unique().tolist(),
-                          "type_value": df[col].dtype,
-                          "value_counts":df[col].value_counts().round(2).tolist(),
-                          "value_percent":df[col].value_counts(normalize=True).round(2).tolist()}
 
     return cols_data
 
